@@ -7,9 +7,9 @@ import scala.collection.mutable.Map
 class TaskService {
   
   
-  var tasks = Map.empty[String, Task]
+  var tasks: Map[String,Task] = Map()
 
-  def create(task: Task) = {
+  def create(task: Task): Task = {
     
     val uuid: String = java.util.UUID.randomUUID().toString();
     val newTask = Task(id=Some(uuid), 
@@ -21,20 +21,20 @@ class TaskService {
     newTask
   }
   
-  def start(task: Task) = {
+  def start(task: Task): Task = {
     
-    val existingTask = tasks.get(task.id.toString()).get
+    val existingTask = tasks.get(task.id.get).get
     val updateTask = Task(id=existingTask.id, 
         todo=existingTask.todo, 
         topic=task.topic, 
         explanation=task.explanation,
         ongoing=Some(new Date))
     
-    tasks(existingTask.id.get) = existingTask
-    existingTask
+    tasks(existingTask.id.get) = updateTask
+    updateTask
   }
   
-  def finish(task: Task) = {
+  def finish(task: Task): Task = {
     
     val existingTask = tasks.get(task.id.toString()).get
     val finishTask = Task(id=existingTask.id, 
