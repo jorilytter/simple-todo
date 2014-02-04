@@ -13,7 +13,7 @@ class TaskService {
     
     val uuid: String = java.util.UUID.randomUUID().toString();
     val newTask = Task(id=Some(uuid), 
-        todo=Some(new Date), 
+        created=Some(new Date), 
         topic=task.topic, 
         explanation=task.explanation)
         
@@ -21,14 +21,27 @@ class TaskService {
     newTask
   }
   
-  def start(task: Task): Task = {
+  def start(id: String): Task = {
     
-    val existingTask = tasks.get(task.id.get).get
+    val existingTask = tasks.get(id).get
     val updateTask = Task(id=existingTask.id, 
-        todo=existingTask.todo, 
-        topic=task.topic, 
-        explanation=task.explanation,
-        ongoing=Some(new Date))
+        created=existingTask.created, 
+        topic=existingTask.topic, 
+        explanation=existingTask.explanation,
+        started=Some(new Date))
+    
+    tasks(existingTask.id.get) = updateTask
+    updateTask
+  }
+  
+  def update(id: String, topic: String, explanation: String): Task = {
+    
+    val existingTask = tasks.get(id).get
+    val updateTask = Task(id=existingTask.id, 
+        created=existingTask.created, 
+        topic=topic, 
+        explanation=explanation,
+        started=existingTask.started)
     
     tasks(existingTask.id.get) = updateTask
     updateTask
@@ -38,10 +51,10 @@ class TaskService {
     
     val existingTask = tasks.get(task.id.toString()).get
     val finishTask = Task(id=existingTask.id, 
-        todo=existingTask.todo, 
+        created=existingTask.created, 
         topic=task.topic, 
         explanation=task.explanation,
-        ongoing=existingTask.ongoing,
+        started=existingTask.started,
         finished=Some(new Date))
         
    tasks(finishTask.id.get) = finishTask

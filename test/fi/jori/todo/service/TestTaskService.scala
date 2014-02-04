@@ -28,34 +28,53 @@ class TestTaskService extends Specification with ResultMatchers {
   
   "Created task" should {
     "have a creation date" in {
-      createdTask.todo must not be None
+      createdTask.created must not be None
     }
   }  
   
   "Created task" should {
     "have a creation date before current time" in {
-      createdTask.todo.get must be before(new Date)
+      createdTask.created.get must be before(new Date)
     }
   }
   
-  def updateTask = Task(id=createdTask.id, topic="new topic of task",explanation="some long explanation of task")
-  def updatedTask = service.start(updateTask)
+  def updatedNotStartedTask = service.update(createdTask.id.get, "New topic", "improved explanation")
   
   "Updated task" should {
+    "not have a start time" in {
+      updatedNotStartedTask.started === None
+    } 
+  }
+  
+  "Updated task" should {
+    "have a new topic" in {
+      updatedNotStartedTask.topic must not be equalTo(createdTask.topic)
+    } 
+  }
+  
+  "Updated task" should {
+    "have a new explanation" in {
+      updatedNotStartedTask.explanation must not be equalTo(createdTask.explanation)
+    } 
+  }
+  
+  def startedTask = service.start(createdTask.id.get)
+  
+  "Started task" should {
     "have same uuid as original" in {
-      updatedTask.id.get must be equalTo(createdTask.id.get)
+      startedTask.id.get must be equalTo(createdTask.id.get)
     }
   }
   
-  "Updated task" should {
+  "Started task" should {
     "have a start date" in {
-      updatedTask.ongoing must not be None
+      startedTask.started must not be None
     }
   }  
   
-  "Updated task" should {
+  "Started task" should {
     "have a start time after creation time" in {
-      updatedTask.todo.get must be after(createdTask.todo.get)
+      startedTask.created.get must be after(createdTask.created.get)
     }
   }
 }

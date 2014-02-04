@@ -5,8 +5,8 @@ import java.util.Date
 case class Task(id: Option[String] = None,
     topic: String,
     explanation: String,
-    todo: Option[Date] = None,
-    ongoing: Option[Date] = None,
+    created: Option[Date] = None,
+    started: Option[Date] = None,
     finished: Option[Date] = None,
     deleted: Option[Date] = None) {
 
