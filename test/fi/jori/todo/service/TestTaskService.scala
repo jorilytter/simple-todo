@@ -10,8 +10,8 @@ import java.util.Date
 @RunWith(classOf[JUnitRunner])
 class TestTaskService extends Specification with ResultMatchers {
 
-  val service = new TaskService()
   val task = Task(topic="topic of task",explanation="some long explanation of task")
+  val service = new TaskService()
   val createdTask = service.create(task)
   
   "Created task" should {
@@ -34,15 +34,15 @@ class TestTaskService extends Specification with ResultMatchers {
   
   "Created task" should {
     "have a creation date before current time" in {
-      createdTask.created.get must be before(new Date)
+      createdTask.created.get.getTime() must be <= new Date().getTime()
     }
   }
-  
-  def updatedNotStartedTask = service.update(createdTask.id.get, "New topic", "improved explanation")
+
+  val updatedNotStartedTask = service.update(createdTask.id.get, "New topic", "improved explanation")
   
   "Updated task" should {
     "not have a start time" in {
-      updatedNotStartedTask.started === None
+      updatedNotStartedTask.started must be equalTo(None)
     } 
   }
   
@@ -57,8 +57,8 @@ class TestTaskService extends Specification with ResultMatchers {
       updatedNotStartedTask.explanation must not be equalTo(createdTask.explanation)
     } 
   }
-  
-  def startedTask = service.start(createdTask.id.get)
+
+  val startedTask = service.start(createdTask.id.get)
   
   "Started task" should {
     "have same uuid as original" in {
@@ -74,7 +74,44 @@ class TestTaskService extends Specification with ResultMatchers {
   
   "Started task" should {
     "have a start time after creation time" in {
-      startedTask.created.get must be after(createdTask.created.get)
+      startedTask.created.get.getTime() must be >= createdTask.created.get.getTime()
     }
   }
+
+  val finishedTask = service.finish(createdTask.id.get)
+  
+  "Finished task" should {
+    "have a finish time" in {
+      finishedTask.finished must not be None
+    }
+  }
+  
+  "Finished task" should {
+    "have a finish time after creation time" in {
+      finishedTask.finished.get.getTime() must be >= createdTask.created.get.getTime()
+    }
+  }
+
+  "Finished task" should {
+    "have a finish time after start time" in {
+      finishedTask.finished.get.getTime() must be >= finishedTask.started.get.getTime()
+    }
+  }
+  
+  val otherTask = Task(topic="topic of other task",explanation="some long explanation of other task")
+  val createdOther = service.create(otherTask)
+  val finishOther = service.finish(createdOther.id.get)
+  
+  "Finishing task that's not started" should {
+    "add a start time" in {
+      finishOther.started.get must not be None
+    }
+  }
+  
+  "Finishing task that's not started" should {
+    "have start time before finish time" in {
+      finishOther.started.get.getTime() must be <= finishOther.finished.get.getTime()
+    }
+  }
+  
 }
