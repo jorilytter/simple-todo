@@ -30,7 +30,7 @@ class TestTaskService extends Specification with ResultMatchers {
     "have a creation date" in {
       createdTask.created must not be None
     }
-  }  
+  }
   
   "Created task" should {
     "have a creation date before current time" in {
@@ -113,5 +113,6 @@ class TestTaskService extends Specification with ResultMatchers {
       finishOther.started.get.getTime() must be <= finishOther.finished.get.getTime()
     }
   }
+  
   
 }
