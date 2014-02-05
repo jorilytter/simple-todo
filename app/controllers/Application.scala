@@ -37,7 +37,6 @@ object Application extends Controller {
   }
 
   def createTask = Action(parse.json) { request =>
-    println(request.body.toString)
     request.body.validate[(String,String)].map { 
       case (topic,explanation) => {
         def task = service.create(Task(topic=topic,explanation=explanation))
@@ -45,6 +44,14 @@ object Application extends Controller {
       }
     }.recoverTotal {
       e => BadRequest("Error: " + JsError.toFlatJson(e))
+    }
+  }
+  
+  def startTask(uid: String) = Action {
+    def task = service.start(uid)
+    task match { 
+      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
+      case _ => BadRequest("Error: Task not found")
     }
   }
   

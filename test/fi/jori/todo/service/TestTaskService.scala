@@ -77,6 +77,12 @@ class TestTaskService extends Specification with ResultMatchers {
       startedTask.created.get.getTime() must be >= createdTask.created.get.getTime()
     }
   }
+  
+  "Starting non existing task" should {
+    "throw exception" in {
+      service.start("123") must throwA[NoSuchElementException]
+    }
+  }
 
   val finishedTask = service.finish(createdTask.id.get)
   
