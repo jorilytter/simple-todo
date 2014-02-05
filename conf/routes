@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /task/:uid                  controllers.Application.get(uid:String)
 GET     /task                       controllers.Application.tasks
 POST    /task                       controllers.Application.createTask
 
