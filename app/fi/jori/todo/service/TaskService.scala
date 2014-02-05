@@ -8,6 +8,10 @@ class TaskService {
   
   var tasks: Map[String,Task] = Map()
 
+  def find(uid: String): Option[Task] = {
+    tasks.get(uid)
+  }
+  
   def create(task: Task): Task = {
     
     val uuid: String = java.util.UUID.randomUUID().toString();
