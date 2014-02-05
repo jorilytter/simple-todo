@@ -98,6 +98,18 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
   
+  "Getting existing task" should {
+    "return a valid task" in {
+      service.find(finishedTask.id.get) must not be None
+    }
+  }
+  
+  "Getting non existing task" should {
+    "return None instead of task" in {
+      service.find("123") must be equalTo(None)
+    }
+  }
+  
   val otherTask = Task(topic="topic of other task",explanation="some long explanation of other task")
   val createdOther = service.create(otherTask)
   val finishOther = service.finish(createdOther.id.get)
