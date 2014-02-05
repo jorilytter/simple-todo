@@ -14,20 +14,28 @@ import fi.jori.todo.model.Task
 object Application extends Controller {
 
   val jsonContent = "application/json"
+  implicit val readCreateTask = ((__ \ 'topic).read[String] and (__ \ 'explanation).read[String]) tupled
+  implicit val taskJson = Json.writes[Task]
+  
   val service = new TaskService()
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def get(uid: String) = Action {
+    def task = service.find(uid)
+    task match { 
+      case None => BadRequest("Error: Task not found")
+      case _ => Ok(Json.toJson(task.get)).as(jsonContent)
+    }
+  }
+  
   def tasks = Action {
     def tasks = service.tasks.values
     Ok(Json.arr(tasks)).as(jsonContent)
   }
 
-  implicit val readCreateTask = ((__ \ 'topic).read[String] and (__ \ 'explanation).read[String]) tupled
-  implicit val taskJson = Json.writes[Task]
-  
   def createTask = Action(parse.json) { request =>
     println(request.body.toString)
     request.body.validate[(String,String)].map { 
@@ -40,12 +48,4 @@ object Application extends Controller {
     }
   }
   
-  def get(uid: String) = Action {
-    def task = service.find(uid)
-    task match { 
-      case None => BadRequest("Error: Task not found")
-      case _ => Ok(Json.toJson(task.get)).as(jsonContent)
-    }
-      
-  }
 }
