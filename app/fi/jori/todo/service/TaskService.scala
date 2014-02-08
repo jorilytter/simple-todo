@@ -81,7 +81,7 @@ class TaskService {
     finishTask
   }
   
-  def delete(id: String): Task = {
+  def remove(id: String): Task = {
     val existingTask = tasks.get(id).get
     val removeTask = Task(id=existingTask.id, 
         created=existingTask.created, 

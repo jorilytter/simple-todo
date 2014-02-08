@@ -132,7 +132,7 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
   
-  val removedTask = service.delete(finishedTask.id.get)
+  val removedTask = service.remove(finishedTask.id.get)
   "Deleting task" should {
     "mark it removed" in {
       removedTask.deleted must not be None

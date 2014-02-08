@@ -66,8 +66,8 @@ object Application extends Controller {
     }
   }
   
-  def deleteTask(uid: String) = Action {
-    def task = service.delete(uid)
+  def removeTask(uid: String) = Action {
+    def task = service.remove(uid)
     task match { 
       case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
       case _ => BadRequest("Error: Task not found")
