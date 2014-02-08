@@ -10,9 +10,8 @@ import java.util.Date
 @RunWith(classOf[JUnitRunner])
 class TestTaskService extends Specification with ResultMatchers {
 
-  val task = Task(topic="topic of task",explanation="some long explanation of task")
   val service = new TaskService()
-  val createdTask = service.create(task)
+  val createdTask = service.create("topic of task", "some long explanation of task")
   
   "Created task" should {
     "have uuid" in {
@@ -116,8 +115,7 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
   
-  val otherTask = Task(topic="topic of other task",explanation="some long explanation of other task")
-  val createdOther = service.create(otherTask)
+  val createdOther = service.create("topic of other task", "some long explanation of other task")
   val finishOther = service.finish(createdOther.id.get)
   
   "Finishing task that's not started" should {

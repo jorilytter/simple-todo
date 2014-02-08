@@ -46,7 +46,7 @@ object Application extends Controller {
   def createTask = Action(parse.json) { request =>
     request.body.validate[(String,String)].map { 
       case (topic,explanation) => {
-        def task = service.create(Task(topic=topic,explanation=explanation))
+        def task = service.create(topic,explanation)
         taskResponse(task)
       }
     }.recoverTotal {

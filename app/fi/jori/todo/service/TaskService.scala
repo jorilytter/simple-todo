@@ -12,13 +12,13 @@ class TaskService {
     tasks.get(id).get
   }
   
-  def create(task: Task): Task = {
+  def create(topic: String, explanation: String): Task = {
     
     val uuid: String = java.util.UUID.randomUUID().toString();
     val newTask = Task(id=Some(uuid), 
         created=Some(new Date), 
-        topic=task.topic, 
-        explanation=task.explanation)
+        topic=topic, 
+        explanation=explanation)
         
     tasks += (uuid -> newTask)
     newTask
