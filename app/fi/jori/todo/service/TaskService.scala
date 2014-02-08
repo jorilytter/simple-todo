@@ -7,6 +7,13 @@ import scala.collection.mutable.Map
 class TaskService {
   
   var tasks: Map[String,Task] = Map()
+  
+  private def startTime(started: Option[Date]) = {
+      started match { 
+        case None => Some(new Date) 
+        case _ => started 
+      }
+    }
 
   def find(id: String): Task = {
     tasks.get(id).get
@@ -31,7 +38,7 @@ class TaskService {
         created=existingTask.created, 
         topic=existingTask.topic, 
         explanation=existingTask.explanation,
-        started=Some(new Date))
+        started=startTime(existingTask.started))
     
     tasks(existingTask.id.get) = updateTask
     updateTask
@@ -40,21 +47,11 @@ class TaskService {
   def update(id: String, topic: String, explanation: String): Task = {
     
     val existingTask = tasks.get(id).get
-    val updateTask = existingTask.started match {
-      case None => {
-        Task(id=existingTask.id, 
-        created=existingTask.created, 
-        topic=topic, 
-        explanation=explanation)
-      }
-      case _ => {
-        Task(id=existingTask.id, 
+    val updateTask = Task(id=existingTask.id, 
         created=existingTask.created, 
         topic=topic, 
         explanation=explanation,
         started=existingTask.started)
-      }
-    }
       
     tasks(existingTask.id.get) = updateTask
     updateTask
@@ -62,12 +59,7 @@ class TaskService {
   
   def finish(id: String): Task = {
     
-    def startTime(started: Option[Date]) = {
-      started match { 
-        case None => Some(new Date) 
-        case _ => started 
-      }
-    }
+    
     
     val existingTask = tasks.get(id).get
     val finishTask = Task(id=existingTask.id, 
