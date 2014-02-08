@@ -3,12 +3,10 @@ simple-todo
 
 Simple todo application written in scala.
 
-Nothing done yet, just ideas at the moment.
+Service layer in scala.
 
-Service layer written in scala.
+REST-service in scala with play 2.
 
-REST-service written in scala with play 2
+Possibly UI with ...? ...if I lose my mind maybe with js?
 
-Possibly UI with scala and play 2?... or if I lose my mind maybe with js?
-
-Data storage redis?/mongo?/mariadb?... or implementation for all?
+Currently data stored in a Map in the next phase data storage will be redis?/mongo?/mariadb?... or implementation for all?
