@@ -5,82 +5,62 @@ import fi.jori.todo.model.Task
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import org.specs2.matcher.ResultMatchers
+import org.specs2.matcher.Matcher
 import java.util.Date
 
 @RunWith(classOf[JUnitRunner])
 class TestTaskService extends Specification with ResultMatchers {
 
-  val service = new TaskService()
-  val createdTask = service.create("topic of task", "some long explanation of task")
+  lazy val service = new TaskService()
+  lazy val createdTask = service.create("topic of task", "some long explanation of task")
   
   "Created task" should {
     "have uuid" in {
-      createdTask.id must not be None 
+      createdTask.id must beSome
+    }
+    "have uuid length greater that zero" in {
+      createdTask.id must beSome((id: String) => id must not be empty)
+    }
+    "have a creation date" in {
+      createdTask.created must beSome
+    }
+    "have a creation date before current time" in {
+      createdTask.created must beBeforeNow
     }
   }
     
-  "Created task" should {
-    "have uuid length greater that zero" in {
-      createdTask.id.get.length() must be > 0
-    }
-  }
-  
-  "Created task" should {
-    "have a creation date" in {
-      createdTask.created must not be None
-    }
-  }
-  
-  "Created task" should {
-    "have a creation date before current time" in {
-      createdTask.created.get.getTime() must be <= new Date().getTime()
-    }
-  }
-
-  val updatedNotStartedTask = service.update(createdTask.id.get, "New topic", "improved explanation")
+  lazy val updatedNotStartedTask = service.update(createdTask.id.get, "New topic", "improved explanation")
   
   "Updated task" should {
     "not have a start time" in {
-      updatedNotStartedTask.started must be equalTo(None)
+      updatedNotStartedTask.started must beNone
     } 
-  }
-  
-  "Updated task" should {
     "have a new topic" in {
       updatedNotStartedTask.topic must not be equalTo(createdTask.topic)
     } 
-  }
-  
-  "Updated task" should {
     "have a new explanation" in {
       updatedNotStartedTask.explanation must not be equalTo(createdTask.explanation)
     } 
   }
-
-  val startedTask = service.start(createdTask.id.get)
+  
+  lazy val startedTask = service.start(createdTask.id.get)
   
   "Started task" should {
     "have same uuid as original" in {
-      startedTask.id.get must be equalTo(createdTask.id.get)
+      startedTask.id must beSome((id: String) => createdTask.id must beSome(===(id)))
     }
-  }
-  
-  "Started task" should {
     "have a start date" in {
-      startedTask.started must not be None
+      startedTask.started must beSome
     }
-  }  
-  
-  "Started task" should {
     "have a start time after creation time" in {
-      startedTask.created.get.getTime() must be >= createdTask.created.get.getTime()
+      startedTask.created must beAfter(createdTask.created)
     }
   }
   
-  val restartTask = service.start(startedTask.id.get)
+  lazy val restartTask = service.start(startedTask.id.get)
   "Starting task again" should {
     "not update the start time" in {
-      restartTask.started.get.getTime() must be equalTo(startedTask.started.get.getTime())
+      restartTask.started must haveTheSameDateAs(startedTask.started)
     }
   }
   
@@ -90,27 +70,21 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
 
-  val finishedTask = service.finish(createdTask.id.get)
+  lazy val finishedTask = service.finish(createdTask.id.get)
   
   "Finished task" should {
     "have a finish time" in {
-      finishedTask.finished must not be None
+      finishedTask.finished must beSome
     }
-  }
-  
-  "Finished task" should {
-    "have a finish time after creation time" in {
-      finishedTask.finished.get.getTime() must be >= createdTask.created.get.getTime()
-    }
-  }
 
-  "Finished task" should {
-    "have a finish time after start time" in {
-      finishedTask.finished.get.getTime() must be >= finishedTask.started.get.getTime()
+    "have a finish time after creation time" in {
+      finishedTask.finished must beAfter(createdTask.created)
     }
-  }
-  
-  "Finished task" should {
+
+    "have a finish time after start time" in {
+      finishedTask.finished must beAfter(finishedTask.started)
+    }
+
     "stay finished" in {
       service.start(finishedTask.id.get) must throwA[Exception]
     }
@@ -118,7 +92,8 @@ class TestTaskService extends Specification with ResultMatchers {
   
   "Getting existing task" should {
     "return a valid task" in {
-      service.find(finishedTask.id.get) must not be None
+      // find should return an Option!
+      service.find(finishedTask.id.get) must not beNull
     }
   }
   
@@ -128,25 +103,35 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
   
-  val createdOther = service.create("topic of other task", "some long explanation of other task")
-  val finishOther = service.finish(createdOther.id.get)
+  lazy val createdOther = service.create("topic of other task", "some long explanation of other task")
+  lazy val finishOther = service.finish(createdOther.id.get)
   
   "Finishing task that's not started" should {
     "add a start time" in {
-      finishOther.started.get must not be None
+      finishOther.started must beSome
     }
-  }
-  
-  "Finishing task that's not started" should {
+
     "have start time before finish time" in {
-      finishOther.started.get.getTime() must be <= finishOther.finished.get.getTime()
+      finishOther.started must beBefore(finishOther.finished)
     }
   }
-  
-  val removedTask = service.remove(finishedTask.id.get)
+    
+  lazy val removedTask = service.remove(finishedTask.id.get)
   "Deleting task" should {
     "mark it removed" in {
-      removedTask.deleted must not be None
+      removedTask.deleted must beSome
     }
   }
+
+  def beAfter(date: Option[Date]): Matcher[Option[Date]] = (actual: Option[Date]) =>
+    actual must beSome((d: Date) => date must beSome(be_<=(d)))
+
+  def beBefore(date: Option[Date]): Matcher[Option[Date]] = (actual: Option[Date]) =>
+    actual must beSome((d: Date) => date must beSome(be_>=(d)))
+
+  def beBeforeNow: Matcher[Option[Date]] = (actual: Option[Date]) =>
+    (actual must beSome((d: Date) => d.getTime must be_<=((new Date).getTime))).toResult
+
+  def haveTheSameDateAs(date: Option[Date]): Matcher[Option[Date]] = (actual: Option[Date]) =>
+    actual must beSome((d: Date) => date must beSome(be_==(d)))
 }
