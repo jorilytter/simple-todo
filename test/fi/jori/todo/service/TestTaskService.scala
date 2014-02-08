@@ -77,6 +77,13 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
   
+  val restartTask = service.start(startedTask.id.get)
+  "Starting task again" should {
+    "not update the start time" in {
+      restartTask.started.get.getTime() must be equalTo(startedTask.started.get.getTime())
+    }
+  }
+  
   "Starting non existing task" should {
     "throw exception" in {
       service.start("123") must throwA[NoSuchElementException]
