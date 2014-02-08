@@ -26,8 +26,8 @@ object Application extends Controller {
   def get(uid: String) = Action {
     def task = service.find(uid)
     task match { 
-      case None => BadRequest("Error: Task not found")
-      case _ => Ok(Json.toJson(task.get)).as(jsonContent)
+      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
+      case _ => BadRequest("Error: Task not found")
     }
   }
   
@@ -58,4 +58,19 @@ object Application extends Controller {
     }
   }
   
+  def finishTask(uid: String) = Action {
+    def task = service.finish(uid)
+    task match { 
+      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
+      case _ => BadRequest("Error: Task not found")
+    }
+  }
+  
+  def deleteTask(uid: String) = Action {
+    def task = service.delete(uid)
+    task match { 
+      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
+      case _ => BadRequest("Error: Task not found")
+    }
+  }
 }

@@ -8,8 +8,8 @@ class TaskService {
   
   var tasks: Map[String,Task] = Map()
 
-  def find(uid: String): Option[Task] = {
-    tasks.get(uid)
+  def find(id: String): Task = {
+    tasks.get(id).get
   }
   
   def create(task: Task): Task = {
@@ -77,7 +77,21 @@ class TaskService {
         started=startTime(existingTask.started),
         finished=Some(new Date))
         
-   tasks(existingTask.id.get) = finishTask
-   finishTask
+    tasks(existingTask.id.get) = finishTask
+    finishTask
+  }
+  
+  def delete(id: String): Task = {
+    val existingTask = tasks.get(id).get
+    val removeTask = Task(id=existingTask.id, 
+        created=existingTask.created, 
+        topic=existingTask.topic, 
+        explanation=existingTask.explanation,
+        started=existingTask.started,
+        finished=existingTask.finished,
+        deleted=Some(new Date))
+        
+   tasks(existingTask.id.get) = removeTask
+   removeTask
   }
 }

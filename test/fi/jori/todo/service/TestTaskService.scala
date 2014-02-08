@@ -111,8 +111,8 @@ class TestTaskService extends Specification with ResultMatchers {
   }
   
   "Getting non existing task" should {
-    "return None instead of task" in {
-      service.find("123") must be equalTo(None)
+    "return error instead of task" in {
+      service.find("123") must throwA[NoSuchElementException]
     }
   }
   
@@ -132,5 +132,10 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
   
-  
+  val removedTask = service.delete(finishedTask.id.get)
+  "Deleting task" should {
+    "mark it removed" in {
+      removedTask.deleted must not be None
+    }
+  }
 }
