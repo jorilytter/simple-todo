@@ -17,18 +17,22 @@ object Application extends Controller {
   implicit val readCreateTask = ((__ \ 'topic).read[String] and (__ \ 'explanation).read[String]) tupled
   implicit val taskJson = Json.writes[Task]
   
-  val service = new TaskService()
+  private val service = new TaskService()
 
+  private def taskResponse(task: Task) = {
+    task match { 
+      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
+      case _ => BadRequest("Error: Task not found")
+    }
+  }
+  
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
 
   def get(uid: String) = Action {
     def task = service.find(uid)
-    task match { 
-      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
-      case _ => BadRequest("Error: Task not found")
-    }
+    taskResponse(task)
   }
   
   def tasks = Action {
@@ -43,7 +47,7 @@ object Application extends Controller {
     request.body.validate[(String,String)].map { 
       case (topic,explanation) => {
         def task = service.create(Task(topic=topic,explanation=explanation))
-        Ok(Json.toJson(task)).as(jsonContent)
+        taskResponse(task)
       }
     }.recoverTotal {
       e => BadRequest("Error: " + JsError.toFlatJson(e))
@@ -52,25 +56,16 @@ object Application extends Controller {
   
   def startTask(uid: String) = Action {
     def task = service.start(uid)
-    task match { 
-      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
-      case _ => BadRequest("Error: Task not found")
-    }
+    taskResponse(task)
   }
   
   def finishTask(uid: String) = Action {
     def task = service.finish(uid)
-    task match { 
-      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
-      case _ => BadRequest("Error: Task not found")
-    }
+    taskResponse(task)
   }
   
   def removeTask(uid: String) = Action {
     def task = service.remove(uid)
-    task match { 
-      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
-      case _ => BadRequest("Error: Task not found")
-    }
+    taskResponse(task)
   }
 }
