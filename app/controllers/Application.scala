@@ -36,9 +36,7 @@ object Application extends Controller {
   }
   
   def tasks = Action {
-    
     def formatTasks(allTasks: Iterable[Task]) = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
-    
     def tasks = service.tasks.values
     Ok(formatTasks(tasks)).as(jsonContent)
   }

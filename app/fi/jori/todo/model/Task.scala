@@ -8,6 +8,4 @@ case class Task(id: Option[String] = None,
     created: Option[Date] = None,
     started: Option[Date] = None,
     finished: Option[Date] = None,
-    deleted: Option[Date] = None) {
-
-}
+    deleted: Option[Date] = None) {}

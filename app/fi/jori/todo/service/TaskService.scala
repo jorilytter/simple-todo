@@ -20,7 +20,6 @@ class TaskService {
   }
   
   def create(topic: String, explanation: String): Task = {
-    
     val uuid: String = java.util.UUID.randomUUID().toString();
     val newTask = Task(id=Some(uuid), 
         created=Some(new Date), 
@@ -32,7 +31,6 @@ class TaskService {
   }
   
   def start(id: String): Task = {
-    
     val existingTask = tasks.get(id).get
     val updateTask = Task(id=existingTask.id, 
         created=existingTask.created, 
@@ -45,7 +43,6 @@ class TaskService {
   }
   
   def update(id: String, topic: String, explanation: String): Task = {
-    
     val existingTask = tasks.get(id).get
     val updateTask = Task(id=existingTask.id, 
         created=existingTask.created, 
@@ -58,9 +55,6 @@ class TaskService {
   }
   
   def finish(id: String): Task = {
-    
-    
-    
     val existingTask = tasks.get(id).get
     val finishTask = Task(id=existingTask.id, 
         created=existingTask.created, 
