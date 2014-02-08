@@ -110,6 +110,12 @@ class TestTaskService extends Specification with ResultMatchers {
     }
   }
   
+  "Finished task" should {
+    "stay finished" in {
+      service.start(finishedTask.id.get) must throwA[Exception]
+    }
+  }
+  
   "Getting existing task" should {
     "return a valid task" in {
       service.find(finishedTask.id.get) must not be None

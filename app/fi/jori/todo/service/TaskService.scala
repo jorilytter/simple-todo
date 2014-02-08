@@ -32,6 +32,8 @@ class TaskService {
   
   def start(id: String): Task = {
     val existingTask = tasks.get(id).get
+    require(existingTask.finished == None, "Task is already finished")
+    
     val updateTask = Task(id=existingTask.id, 
         created=existingTask.created, 
         topic=existingTask.topic, 
@@ -48,7 +50,8 @@ class TaskService {
         created=existingTask.created, 
         topic=topic, 
         explanation=explanation,
-        started=existingTask.started)
+        started=existingTask.started,
+        finished=existingTask.finished)
       
     tasks(existingTask.id.get) = updateTask
     updateTask
