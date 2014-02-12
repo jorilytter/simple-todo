@@ -16,7 +16,7 @@ class TaskService {
     }
 
   def find(id: String): Task = {
-    tasks.get(id).get
+    tasks(id)
   }
   
   def create(topic: String, explanation: String): Task = {
@@ -31,7 +31,7 @@ class TaskService {
   }
   
   def start(id: String): Task = {
-    val existingTask = tasks.get(id).get
+    val existingTask = tasks(id)
     require(existingTask.finished == None, "Task is already finished")
     
     val updateTask = Task(id=existingTask.id, 
@@ -45,7 +45,7 @@ class TaskService {
   }
   
   def update(id: String, topic: String, explanation: String): Task = {
-    val existingTask = tasks.get(id).get
+    val existingTask = tasks(id)
     val updateTask = Task(id=existingTask.id, 
         created=existingTask.created, 
         topic=topic, 
@@ -58,7 +58,7 @@ class TaskService {
   }
   
   def finish(id: String): Task = {
-    val existingTask = tasks.get(id).get
+    val existingTask = tasks(id)
     val finishTask = Task(id=existingTask.id, 
         created=existingTask.created, 
         topic=existingTask.topic, 
@@ -71,7 +71,7 @@ class TaskService {
   }
   
   def remove(id: String): Task = {
-    val existingTask = tasks.get(id).get
+    val existingTask = tasks(id)
     val removeTask = Task(id=existingTask.id, 
         created=existingTask.created, 
         topic=existingTask.topic, 
