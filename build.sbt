@@ -11,3 +11,6 @@ libraryDependencies ++= Seq(
 )     
 
 play.Project.playScalaSettings
+
+ScoverageSbtPlugin.instrumentSettings
+
