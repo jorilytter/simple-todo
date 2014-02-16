@@ -1,18 +1,14 @@
 package fi.jori.todo.service
 
-import org.specs2.mutable.Specification
-import fi.jori.todo.model.Task
-import org.junit.runner.RunWith
-import org.specs2.runner.JUnitRunner
-import org.specs2.matcher.ResultMatchers
 import java.util.Date
-import org.specs2.specification._
-import play.api.test.FakeApplication
-import play.api.test.WithApplication
-import play.api.test.WithApplication
+import org.junit.runner.RunWith
 import org.specs2.execute.AsResult
 import org.specs2.execute.Result
-import org.bson.types.ObjectId
+import org.specs2.matcher.ResultMatchers
+import org.specs2.mutable.Specification
+import fi.jori.todo.model.Task
+import play.api.test.WithApplication
+import org.specs2.runner.JUnitRunner
 
 abstract class WithTaskService extends WithApplication {
   

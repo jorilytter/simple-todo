@@ -1,11 +1,11 @@
 package fi.jori.todo.service
 
-import org.specs2.mutable.Specification
-import fi.jori.todo.model.Task
 import java.util.Date
 import org.junit.runner.RunWith
-import org.specs2.runner.JUnitRunner
+import org.specs2.mutable.Specification
+import fi.jori.todo.model.Task
 import play.api.test.WithApplication
+import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class TestTask extends Specification {

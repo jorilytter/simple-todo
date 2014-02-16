@@ -1,15 +1,14 @@
 package fi.jori.todo.service
 
-import fi.jori.todo.model.Task
 import java.util.Date
-import scala.collection.mutable.Map
-import com.novus.salat._
-import fi.jori.todo.model.Task
-import com.novus.salat._
-import play.api._
-import play.api.Play.current
-import myApp._
+
 import org.bson.types.ObjectId
+
+import com.novus.salat.Context
+
+import fi.jori.todo.model.Task
+import play.api.Play
+import play.api.Play.current
 
 class TaskService {
   

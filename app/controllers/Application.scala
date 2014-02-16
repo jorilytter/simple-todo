@@ -1,23 +1,21 @@
 package controllers
 
-import play.api.libs.json.Json
-import play.api.libs.json.__
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.mvc.Action
-import play.api.mvc.Controller
-import views.html.defaultpages.badRequest
-import play.api.libs.json.JsError
-import play.api.libs.functional.syntax._
-import fi.jori.todo.service.TaskService
-import fi.jori.todo.model.Task
-import com.novus.salat.Context
-import play.api.Play
-import play.api.libs.json.Format
 import org.bson.types.ObjectId
-import play.api.libs.json.JsValue
+
+import fi.jori.todo.model.Task
+import fi.jori.todo.service.TaskService
+import play.api.libs.functional.syntax.functionalCanBuildApplicative
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.Format
+import play.api.libs.json.JsError
 import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
-import fi.jori.todo.model.Task
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.libs.json.__
+import play.api.mvc.Action
+import play.api.mvc.Controller
 
 object Application extends Controller {
   
