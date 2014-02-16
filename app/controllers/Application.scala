@@ -17,7 +17,7 @@ import org.bson.types.ObjectId
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
-import fi.jori.todo.model.Tasks
+import fi.jori.todo.model.Task
 
 object Application extends Controller {
   
@@ -61,7 +61,7 @@ object Application extends Controller {
   
   def tasks = Action {
     def formatTasks(allTasks: Iterable[Task]) = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
-    def tasks = Tasks.all
+    def tasks = Task.all
     Ok(formatTasks(tasks)).as(jsonContent)
   }
 

@@ -6,115 +6,173 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import org.specs2.matcher.ResultMatchers
 import java.util.Date
+import org.specs2.specification._
+import play.api.test.FakeApplication
+import play.api.test.WithApplication
+import play.api.test.WithApplication
+import org.specs2.execute.AsResult
+import org.specs2.execute.Result
+import org.bson.types.ObjectId
+
+abstract class WithTaskService extends WithApplication {
+  
+  val service: TaskService = new TaskService()
+  def createdTask = service.create("topic of task", "some long explanation of task")
+  def update(id: String) = service.update((id: String), "New topic", "improved explanation")
+  def updatedNotStartedTask(id: String) = service.update(id, "New topic", "improved explanation")
+  
+  override def around[T: AsResult](t: => T): Result = super.around {
+    t
+  }
+}
 
 @RunWith(classOf[JUnitRunner])
 class TestTaskService extends Specification with ResultMatchers {
 
-  val service = new TaskService()
-  val createdTask = service.create("topic of task", "some long explanation of task")
-  
   "Created task" should {
-    "have uuid" in {
-      createdTask._id must not be None 
+    "have uuid" in new WithTaskService {
+      val task = createdTask
+      task._id must not be None
+      Task.remove(task)
     }
-    "have uuid length greater that zero" in {
-      createdTask._id.get.toString().length() must be > 0
+    "have uuid length greater that zero" in new WithTaskService {
+      val task = createdTask
+      task._id.get.toString().length() must be > 0
+      Task.remove(task)
     }
-    "have a creation date" in {
-      createdTask.created must not be None
+    "have a creation date" in new WithTaskService {
+      val task = createdTask
+      task.created must not be None
+      Task.remove(task)
     }
-    "have a creation date before current time" in {
-      createdTask.created.get.getTime() must be <= new Date().getTime()
+    "have a creation date before current time" in new WithTaskService {
+      val task = createdTask
+      task.created.get.getTime() must be <= new Date().getTime()
+      Task.remove(task)
     }
   }
-/*
-  val updatedNotStartedTask = service.update(createdTask._id.get.toString(), "New topic", "improved explanation")
-  
+
   "Updated task" should {
-    "not have a start time" in {
-      updatedNotStartedTask.started must be equalTo(None)
+    "not have a start time" in new WithTaskService {
+      val created = createdTask
+      val task = updatedNotStartedTask(created._id.get.toString())
+      task.started must be equalTo(None)
+      Task.remove(task)
     } 
-    "have a new topic" in {
-      updatedNotStartedTask.topic must not be equalTo(createdTask.topic)
+    "have a new topic" in new WithTaskService {
+      val created = createdTask
+      val task = updatedNotStartedTask(created._id.get.toString())
+      task.topic must not be equalTo(created.topic)
+      Task.remove(task)
     } 
-    "have a new explanation" in {
-      updatedNotStartedTask.explanation must not be equalTo(createdTask.explanation)
+    "have a new explanation" in new WithTaskService {
+      val created = createdTask
+      val task = updatedNotStartedTask(created._id.get.toString())
+      task.explanation must not be equalTo(created.explanation)
+      Task.remove(task)
     } 
   }
 
-  val startedTask = service.start(createdTask._id.get.toString())
-  
   "Started task" should {
-    "have same uuid as original" in {
-      startedTask._id.get must be equalTo(createdTask._id.get)
+    "have same uuid as original" in new WithTaskService {
+      val created = createdTask
+      val task = service.start(created._id.get.toString())
+      task._id.get must be equalTo(created._id.get)
+      Task.remove(task)
     }
-    "have a start date" in {
-      startedTask.started must not be None
+    "have a start date" in new WithTaskService {
+      val created = createdTask
+      val task = service.start(created._id.get.toString())
+      task.started must not be None
+      Task.remove(task)
     }
-    "have a start time after creation time" in {
-      startedTask.created.get.getTime() must be >= createdTask.created.get.getTime()
+    "have a start time after creation time" in new WithTaskService {
+      val created = createdTask
+      val task = service.start(created._id.get.toString())
+      task.created.get.getTime() must be >= created.created.get.getTime()
+      Task.remove(task)
     }
   }
   
-  val restartTask = service.start(startedTask._id.get.toString())
   "Starting task again" should {
-    "not update the start time" in {
-      restartTask.started.get.getTime() must be equalTo(startedTask.started.get.getTime())
+    "not update the start time" in new WithTaskService {
+      val created = createdTask
+      val started = service.start(created._id.get.toString())
+      val task = service.start(created._id.get.toString())
+      task.started.get.getTime() must be equalTo(started.started.get.getTime())
+      Task.remove(task)
     }
   }
   
   "Starting non existing task" should {
-    "throw exception" in {
-      service.start("123") must throwA[NoSuchElementException]
+    "throw exception" in new WithTaskService {
+      service.start("123") must throwA[Exception]
     }
   }
 
-  val finishedTask = service.finish(createdTask._id.get.toString())
-  
   "Finished task" should {
-    "have a finish time" in {
-      finishedTask.finished must not be None
+    "have a finish time" in new WithTaskService {
+      val created = createdTask
+      val task = service.finish(created._id.get.toString())
+      task.finished must not be None
+      Task.remove(task)
     }
-    "have a finish time after creation time" in {
-      finishedTask.finished.get.getTime() must be >= createdTask.created.get.getTime()
+    "have a finish time after creation time" in new WithTaskService {
+      val created = createdTask
+      val task = service.finish(created._id.get.toString())
+      task.finished.get.getTime() must be >= created.created.get.getTime()
+      Task.remove(task)
     }
-    "have a finish time after start time" in {
-      finishedTask.finished.get.getTime() must be >= finishedTask.started.get.getTime()
+    "have a finish time after start time" in new WithTaskService {
+      val created = createdTask
+      val started = service.start(created._id.get.toString())
+      val task = service.finish(created._id.get.toString())
+      task.finished.get.getTime() must be >= task.started.get.getTime()
+      Task.remove(task)
     }
-    "stay finished" in {
-      service.start(finishedTask._id.get.toString()) must throwA[Exception]
+    "stay finished" in new WithTaskService {
+      val created = createdTask
+      val task = service.finish(created._id.get.toString())
+      service.start(task._id.get.toString()) must throwA[Exception]
+      Task.remove(task)
     }
   }
   
   "Getting existing task" should {
-    "return a valid task" in {
-      service.find(finishedTask._id.get.toString()) must not be None
+    "return a valid task" in new WithTaskService {
+      val created = createdTask
+      service.find(created._id.get.toString()) must not be None
+      Task.remove(created)
     }
   }
   
   "Getting non existing task" should {
-    "return error instead of task" in {
-      service.find("123") must throwA[NoSuchElementException]
+    "return error instead of task" in new WithTaskService {
+      service.find("123") must throwA[Exception]
     }
   }
-  
-  val createdOther = service.create("topic of other task", "some long explanation of other task")
-  val finishOther = service.finish(createdOther._id.get.toString())
-  
+
   "Finishing task that's not started" should {
-    "add a start time" in {
-      finishOther.started.get must not be None
+    "add a start time" in new WithTaskService {
+      val created = createdTask
+      val task = service.finish(created._id.get.toString())
+      task.started.get must not be None
+      Task.remove(task)
     }
-    "have start time before finish time" in {
-      finishOther.started.get.getTime() must be <= finishOther.finished.get.getTime()
+    "have start time before finish time" in new WithTaskService {
+      val created = createdTask
+      val task = service.finish(created._id.get.toString())
+      task.started.get.getTime() must be <= task.finished.get.getTime()
+      Task.remove(task)
     }
   }
   
-  val removedTask = service.remove(finishedTask._id.get.toString())
   "Deleting task" should {
-    "mark it removed" in {
-      removedTask.deleted must not be None
+    "mark it removed" in new WithTaskService {
+      val created = createdTask
+      val task = service.remove(created._id.get.toString())
+      task.deleted must not be None
+      Task.remove(task)
     }
   }
-  */
 }

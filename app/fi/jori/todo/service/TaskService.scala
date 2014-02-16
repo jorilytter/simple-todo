@@ -3,16 +3,15 @@ package fi.jori.todo.service
 import fi.jori.todo.model.Task
 import java.util.Date
 import scala.collection.mutable.Map
-import com.mongodb.casbah.MongoConnection
 import com.novus.salat._
-import com.novus.salat.global._
-import com.mongodb.casbah.Imports._
-import fi.jori.todo.model.Tasks
+import fi.jori.todo.model.Task
+import com.novus.salat._
+import play.api._
+import play.api.Play.current
+import myApp._
+import org.bson.types.ObjectId
 
 class TaskService {
-  
-  
-  var tasks: Map[String,Task] = Map()
   
   private def startTime(started: Option[Date]) = {
       started match { 
@@ -22,33 +21,20 @@ class TaskService {
     }
 
   def find(id: String): Task = {
-    tasks(id)
+    Task.findOneById(new ObjectId(id)).get
   }
   
   def create(topic: String, explanation: String): Task = {
     
-    val uuid: String = java.util.UUID.randomUUID().toString();
     val newTask = Task(created=Some(new Date), 
         topic=topic, 
         explanation=explanation)
     
-    Tasks.create(newTask)
-        
-//    val createdTask = grater[Task].asDBObject(newTask)
-//    grater[Task].asObject(createdTask)
-    
-//    val uuid: String = java.util.UUID.randomUUID().toString();
-//    val newTask = Task(id=Some(uuid), 
-//        created=Some(new Date), 
-//        topic=topic, 
-//        explanation=explanation)
-//        
-//    tasks += (uuid -> newTask)
-//    newTask
+    Task.create(newTask)
   }
   
   def start(id: String): Task = {
-    val existingTask = tasks(id)
+    val existingTask = find(id)
     require(existingTask.finished == None, "Task is already finished")
     
     val updateTask = Task(_id=existingTask._id, 
@@ -57,12 +43,11 @@ class TaskService {
         explanation=existingTask.explanation,
         started=startTime(existingTask.started))
     
-    tasks(existingTask._id.get.toString()) = updateTask
-    updateTask
+    Task.saveTask(updateTask)
   }
   
   def update(id: String, topic: String, explanation: String): Task = {
-    val existingTask = tasks(id)
+    val existingTask = find(id)
     val updateTask = Task(_id=existingTask._id, 
         created=existingTask.created, 
         topic=topic, 
@@ -70,12 +55,11 @@ class TaskService {
         started=existingTask.started,
         finished=existingTask.finished)
       
-    tasks(existingTask._id.get.toString()) = updateTask
-    updateTask
+    Task.saveTask(updateTask)
   }
   
   def finish(id: String): Task = {
-    val existingTask = tasks(id)
+    val existingTask = find(id)
     val finishTask = Task(_id=existingTask._id, 
         created=existingTask.created, 
         topic=existingTask.topic, 
@@ -83,12 +67,11 @@ class TaskService {
         started=startTime(existingTask.started),
         finished=Some(new Date))
         
-    tasks(existingTask._id.get.toString()) = finishTask
-    finishTask
+      Task.saveTask(finishTask)
   }
   
   def remove(id: String): Task = {
-    val existingTask = tasks(id)
+    val existingTask = find(id)
     val removeTask = Task(_id=existingTask._id, 
         created=existingTask.created, 
         topic=existingTask.topic, 
@@ -96,8 +79,17 @@ class TaskService {
         started=existingTask.started,
         finished=existingTask.finished,
         deleted=Some(new Date))
-        
-   tasks(existingTask._id.get.toString()) = removeTask
-   removeTask
+
+   Task.saveTask(removeTask)
+  }
+}
+
+package object myApp {
+  implicit val ctx = {
+    val c = new Context() {
+      val name = "Custom Context"
+    }
+    c.registerClassLoader(Play.classloader)
+    c
   }
 }
