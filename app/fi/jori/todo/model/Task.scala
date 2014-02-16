@@ -10,10 +10,10 @@ import com.novus.salat.annotations.raw.Key
 
 object Task extends ModelCompanion[Task, ObjectId] {
   
-  val tasks = MongoConnection()("simple-todo")("tasks")
-  val dao = new SalatDAO[Task, ObjectId](collection = tasks) {}
+  private val tasks = MongoConnection()("simple-todo")("tasks")
+  override val dao = new SalatDAO[Task, ObjectId](collection = tasks) {}
   
-  def all = Task.findAll.toList // FIXME: this is a bad idea!
+  def all = Task.findAll.toStream // FIXME: this might be a bad idea!
   
   def create(task: Task): Task = { 
     val id = Task.insert(task)
