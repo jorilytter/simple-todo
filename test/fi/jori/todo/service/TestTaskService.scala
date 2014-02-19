@@ -12,9 +12,10 @@ import fi.jori.todo.model.Task
 import play.api.test.WithApplication
 import org.specs2.runner.JUnitRunner
 import org.specs2.mutable.After
+import play.api.Play
 
 abstract class WithTaskService extends WithApplication {
-
+  
   val service: TaskService = new TaskService()
   def createdTask = service.create("topic of task", "some long explanation of task")
   def update(id: String) = service.update((id: String), "New topic", "improved explanation")

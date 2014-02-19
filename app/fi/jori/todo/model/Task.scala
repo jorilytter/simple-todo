@@ -13,8 +13,8 @@ import play.api.Play
 
 object Task extends ModelCompanion[Task, ObjectId] {
   
-  val db = Play.current.configuration.getString("mongo.db").getOrElse("simple-todo")
-  val collection = Play.current.configuration.getString("tasks.collection").getOrElse("tasks")
+  val db = Play.current.configuration.getString("mongo.db").get
+  val collection = Play.current.configuration.getString("tasks.collection").get
   val tasks = MongoConnection()(db)(collection)
   override val dao = new SalatDAO[Task, ObjectId](collection = tasks) {}
   
