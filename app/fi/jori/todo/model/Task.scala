@@ -36,7 +36,7 @@ object Task extends ModelCompanion[Task, ObjectId] {
   }
   
   def createdTasks: List[Task] = {
-    val query: DBObject = ("removed" $exists false) ++ ("finished" $exists false) ++ ("started" $exists false) ++ ("created" $exists true)
+    val query: DBObject = ("removed" $exists false) ++ ("finished" $exists false) ++ ("started" $exists false)
     Task.find(query).toList
   }
   
