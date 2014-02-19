@@ -1,21 +1,44 @@
 package fi.jori.todo.model
 
 import java.util.Date
-
 import org.bson.types.ObjectId
-
 import com.mongodb.casbah.MongoConnection
 import com.novus.salat.dao.ModelCompanion
 import com.novus.salat.dao.SalatDAO
-
 import fi.jori.todo.service.myApp.ctx
+import com.mongodb.DBObject
+import com.mongodb.casbah.Imports._
+import play.Configuration
+import play.api.Play
 
 object Task extends ModelCompanion[Task, ObjectId] {
   
-  private val tasks = MongoConnection()("simple-todo")("tasks")
+  val db = Play.current.configuration.getString("mongo.db").getOrElse("simple-todo")
+  val collection = Play.current.configuration.getString("tasks.collection").getOrElse("tasks")
+  val tasks = MongoConnection()(db)(collection)
   override val dao = new SalatDAO[Task, ObjectId](collection = tasks) {}
   
   def all = Task.findAll.toStream // FIXME: this might be a bad idea!
+  
+  def removedTasks: List[Task] = {
+    val query: DBObject = "removed" $exists true
+    Task.find(query).toList
+  }
+  
+  def finishedTasks: List[Task] = {
+    val query: DBObject = ("removed" $exists false) ++ ("finished" $exists true)
+    Task.find(query).toList
+  }
+  
+  def startedTasks: List[Task] = {
+    val query: DBObject = ("removed" $exists false) ++ ("finished" $exists false) ++ ("started" $exists true)
+    Task.find(query).toList
+  }
+  
+  def createdTasks: List[Task] = {
+    val query: DBObject = ("removed" $exists false) ++ ("finished" $exists false) ++ ("started" $exists false) ++ ("created" $exists true)
+    Task.find(query).toList
+  }
   
   def create(task: Task): Task = { 
     val id = Task.insert(task)
@@ -34,4 +57,4 @@ case class Task(_id: Option[ObjectId] = None,
     created: Option[Date] = None,
     started: Option[Date] = None,
     finished: Option[Date] = None,
-    deleted: Option[Date] = None) {}
+    removed: Option[Date] = None) {}

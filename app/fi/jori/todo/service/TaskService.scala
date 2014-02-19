@@ -77,9 +77,25 @@ class TaskService {
         explanation=existingTask.explanation,
         started=existingTask.started,
         finished=existingTask.finished,
-        deleted=Some(new Date))
+        removed=Some(new Date))
 
    Task.saveTask(removeTask)
+  }
+  
+  def findRemoved: List[Task] = {
+    Task.removedTasks
+  }
+  
+  def findFinished: List[Task] = {
+    Task.finishedTasks
+  }
+  
+  def findStarted: List[Task] = {
+    Task.startedTasks
+  }
+  
+  def findCreated: List[Task] = {
+    Task.createdTasks
   }
 }
 
