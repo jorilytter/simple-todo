@@ -69,6 +69,21 @@ object Application extends Controller {
     def tasks = Task.createdTasks
     Ok(formatTasks(tasks)).as(jsonContent)
   }
+  
+  def startedTasks = Action {
+    def tasks = Task.createdTasks
+    Ok(formatTasks(tasks)).as(jsonContent)
+  }
+  
+  def finishedTasks = Action {
+    def tasks = Task.finishedTasks
+    Ok(formatTasks(tasks)).as(jsonContent)
+  }
+  
+  def removedTasks = Action {
+    def tasks = Task.removedTasks
+    Ok(formatTasks(tasks)).as(jsonContent)
+  }
 
   def createTask = Action(parse.json) { request =>
     request.body.validate[(String,String)].map { 
