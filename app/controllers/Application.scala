@@ -48,8 +48,10 @@ object Application extends Controller {
     }
   }
   
-  private def formatTasks(allTasks: Iterable[Task]) = 
-    Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
+  private def formatTasks(allTasks: Iterable[Task]) = {
+    def tasks = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
+    Ok(tasks).as(jsonContent)
+  }
   
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
@@ -61,23 +63,23 @@ object Application extends Controller {
   }
   
   def tasks = Action {
-    Ok(formatTasks(Task.all)).as(jsonContent)
+    formatTasks(Task.all)
   }
   
   def createdTasks = Action {
-    Ok(formatTasks(Task.createdTasks)).as(jsonContent)
+    formatTasks(Task.createdTasks)
   }
   
   def startedTasks = Action {
-    Ok(formatTasks(Task.startedTasks)).as(jsonContent)
+    formatTasks(Task.startedTasks)
   }
   
   def finishedTasks = Action {
-    Ok(formatTasks(Task.finishedTasks)).as(jsonContent)
+    formatTasks(Task.finishedTasks)
   }
   
   def removedTasks = Action {
-    Ok(formatTasks(Task.removedTasks)).as(jsonContent)
+    formatTasks(Task.removedTasks)
   }
 
   def createTask = Action(parse.json) { request =>
