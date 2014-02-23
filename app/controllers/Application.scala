@@ -48,6 +48,9 @@ object Application extends Controller {
     }
   }
   
+  private def formatTasks(allTasks: Iterable[Task]) = 
+    Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
+  
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
@@ -58,8 +61,12 @@ object Application extends Controller {
   }
   
   def tasks = Action {
-    def formatTasks(allTasks: Iterable[Task]) = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
     def tasks = Task.all
+    Ok(formatTasks(tasks)).as(jsonContent)
+  }
+  
+  def createdTasks = Action {
+    def tasks = Task.createdTasks
     Ok(formatTasks(tasks)).as(jsonContent)
   }
 
