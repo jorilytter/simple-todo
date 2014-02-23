@@ -61,28 +61,23 @@ object Application extends Controller {
   }
   
   def tasks = Action {
-    def tasks = Task.all
-    Ok(formatTasks(tasks)).as(jsonContent)
+    Ok(formatTasks(Task.all)).as(jsonContent)
   }
   
   def createdTasks = Action {
-    def tasks = Task.createdTasks
-    Ok(formatTasks(tasks)).as(jsonContent)
+    Ok(formatTasks(Task.createdTasks)).as(jsonContent)
   }
   
   def startedTasks = Action {
-    def tasks = Task.createdTasks
-    Ok(formatTasks(tasks)).as(jsonContent)
+    Ok(formatTasks(Task.startedTasks)).as(jsonContent)
   }
   
   def finishedTasks = Action {
-    def tasks = Task.finishedTasks
-    Ok(formatTasks(tasks)).as(jsonContent)
+    Ok(formatTasks(Task.finishedTasks)).as(jsonContent)
   }
   
   def removedTasks = Action {
-    def tasks = Task.removedTasks
-    Ok(formatTasks(tasks)).as(jsonContent)
+    Ok(formatTasks(Task.removedTasks)).as(jsonContent)
   }
 
   def createTask = Action(parse.json) { request =>
