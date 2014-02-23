@@ -5,11 +5,11 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /task/:uid                  controllers.Application.get(uid:String)
-GET     /task                       controllers.Application.tasks
-GET     /task/create                controllers.Application.createdTasks
-GET     /task/start                 controllers.Application.startedTasks
-GET     /task/finish                controllers.Application.finishedTasks
-GET     /task/remove                controllers.Application.removedTasks
+GET     /task/                      controllers.Application.tasks
+GET     /task/create/               controllers.Application.createdTasks
+GET     /task/start/                controllers.Application.startedTasks
+GET     /task/finish/               controllers.Application.finishedTasks
+GET     /task/remove/               controllers.Application.removedTasks
 POST    /task                       controllers.Application.createTask
 PUT     /task/start/:uid            controllers.Application.startTask(uid:String)
 PUT     /task/finish/:uid           controllers.Application.finishTask(uid: String)
