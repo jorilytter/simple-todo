@@ -58,8 +58,7 @@ object Application extends Controller {
   }
 
   def get(uid: String) = Action {
-    def task = service.find(uid)
-    taskResponse(task)
+    taskResponse(service.find(uid))
   }
   
   def tasks = Action {
@@ -94,17 +93,14 @@ object Application extends Controller {
   }
   
   def startTask(uid: String) = Action {
-    def task = service.start(uid)
-    taskResponse(task)
+    taskResponse(service.start(uid))
   }
   
   def finishTask(uid: String) = Action {
-    def task = service.finish(uid)
-    taskResponse(task)
+    taskResponse(service.finish(uid))
   }
   
   def removeTask(uid: String) = Action {
-    def task = service.remove(uid)
-    taskResponse(task)
+    taskResponse(service.remove(uid))
   }
 }
