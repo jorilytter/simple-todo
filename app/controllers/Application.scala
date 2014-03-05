@@ -1,7 +1,6 @@
 package controllers
 
 import org.bson.types.ObjectId
-
 import fi.jori.todo.model.Task
 import fi.jori.todo.service.TaskService
 import play.api.libs.functional.syntax.functionalCanBuildApplicative
@@ -37,7 +36,7 @@ object Application extends Controller {
   }
     
   implicit val readCreateTask = ((__ \ 'topic).read[String] and (__ \ 'explanation).read[String]) tupled
-  implicit val taskJson = Json.writes[Task]
+  implicit val taskJson = Json.writes[Task]  
   
   private val service = new TaskService()
 
@@ -50,7 +49,7 @@ object Application extends Controller {
   
   private def formatTasks(allTasks: Iterable[Task]) = {
     def tasks = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
-    Ok(tasks).as(jsonContent)
+    Ok(tasks).as(jsonContent).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
   }
   
   def index = Action {
