@@ -42,14 +42,21 @@ object Application extends Controller {
 
   private def taskResponse(task: Task) = {
     task match { 
-      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
-      case _ => BadRequest("Error: Task not found")
+      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+      case _ => BadRequest("Error: Task not found").withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
     }
   }
   
   private def formatTasks(allTasks: Iterable[Task]) = {
     def tasks = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
     Ok(tasks).as(jsonContent).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+  }
+  
+  def options(task: String) = Action {
+    Ok("")
+    .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+    .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "POST,PUT")
+    .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "Content-Type")
   }
   
   def index = Action {
