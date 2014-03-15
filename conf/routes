@@ -5,10 +5,10 @@
 # Home page
 OPTIONS /*task                       controllers.Application.options(task:String)
 GET     /                           controllers.Application.index
-GET     /task/create               controllers.Application.createdTasks
-GET     /task/start                controllers.Application.startedTasks
-GET     /task/finish               controllers.Application.finishedTasks
-GET     /task/remove               controllers.Application.removedTasks
+GET     /task/todo               controllers.Application.createdTasks
+GET     /task/ongoing                controllers.Application.startedTasks
+GET     /task/done               controllers.Application.finishedTasks
+GET     /task/removed               controllers.Application.removedTasks
 GET     /task/:uid                  controllers.Application.get(uid:String)
 GET     /task                      controllers.Application.tasks
 POST    /task                       controllers.Application.createTask
