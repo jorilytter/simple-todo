@@ -22,22 +22,26 @@ object Task extends ModelCompanion[Task, ObjectId] {
   
   def removedTasks: List[Task] = {
     val query: DBObject = "removed" $exists true
-    Task.find(query).toList
+    val sort: DBObject = MongoDBObject("removed" -> -1)
+    Task.find(query).sort(orderBy = sort).toList
   }
   
   def finishedTasks: List[Task] = {
     val query: DBObject = ("removed" $exists false) ++ ("finished" $exists true)
-    Task.find(query).toList
+    val sort: DBObject = MongoDBObject("finished" -> -1)
+    Task.find(query).sort(orderBy = sort).toList
   }
   
   def startedTasks: List[Task] = {
     val query: DBObject = ("removed" $exists false) ++ ("finished" $exists false) ++ ("started" $exists true)
-    Task.find(query).toList
+    val sort: DBObject = MongoDBObject("started" -> 1)
+    Task.find(query).sort(orderBy = sort).toList
   }
   
   def createdTasks: List[Task] = {
     val query: DBObject = ("removed" $exists false) ++ ("finished" $exists false) ++ ("started" $exists false)
-    Task.find(query).toList
+    val sort: DBObject = MongoDBObject("created" -> 1)
+    Task.find(query).sort(orderBy = sort).toList
   }
   
   def create(task: Task): Task = { 

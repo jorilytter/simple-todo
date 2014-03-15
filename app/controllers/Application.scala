@@ -109,4 +109,15 @@ object Application extends Controller {
   def removeTask(uid: String) = Action {
     taskResponse(service.remove(uid))
   }
+  
+  def updateTask(uid: String) = Action(parse.json) { request =>
+    request.body.validate[(String,String)].map { 
+      case (topic,explanation) => {
+        def task = service.update(uid,topic,explanation)
+        taskResponse(task)
+      }
+    }.recoverTotal {
+      e => BadRequest("Error: " + JsError.toFlatJson(e))
+    }
+  }
 }
