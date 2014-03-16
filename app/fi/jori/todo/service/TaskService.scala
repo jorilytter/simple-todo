@@ -4,11 +4,7 @@ import java.util.Date
 
 import org.bson.types.ObjectId
 
-import com.novus.salat.Context
-
 import fi.jori.todo.model.Task
-import play.api.Play
-import play.api.Play.current
 
 class TaskService {
   
@@ -96,15 +92,5 @@ class TaskService {
   
   def findCreated: List[Task] = {
     Task.createdTasks
-  }
-}
-
-package object myApp {
-  implicit val ctx = {
-    val c = new Context() {
-      val name = "Custom Context"
-    }
-    c.registerClassLoader(Play.classloader)
-    c
   }
 }

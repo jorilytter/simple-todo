@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 import com.mongodb.casbah.MongoConnection
 import com.novus.salat.dao.ModelCompanion
 import com.novus.salat.dao.SalatDAO
-import fi.jori.todo.service.myApp.ctx
+import fi.jori.todo.app.ctx
 import com.mongodb.DBObject
 import com.mongodb.casbah.Imports._
 import play.Configuration
