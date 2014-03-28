@@ -10,6 +10,7 @@ import play.api.libs.json.JsError
 import play.api.libs.functional.syntax._
 import fi.jori.todo.service.TaskService
 import fi.jori.todo.model.Task
+import play.api.Play
 
 object Application extends Controller {
 
@@ -17,7 +18,14 @@ object Application extends Controller {
   implicit val readCreateTask = ((__ \ 'topic).read[String] and (__ \ 'explanation).read[String]) tupled
   implicit val taskJson = Json.writes[Task]
   
-  private val service = new TaskService()
+  val dbUrl = Play.current.configuration.getString("mysql.url").get
+  val user = Play.current.configuration.getString("mysql.user").get
+  val pass = Play.current.configuration.getString("mysql.pass").get
+  val driver = Play.current.configuration.getString("mysql.driver").get
+  
+  println(dbUrl+" "+user+" "+driver)
+  
+  private val service = new TaskService(dbUrl, user, pass, driver)
 
   private def taskResponse(task: Task) = {
     task match { 
@@ -36,8 +44,9 @@ object Application extends Controller {
   }
   
   def tasks = Action {
-    def formatTasks(allTasks: Iterable[Task]) = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
-    def tasks = service.tasks.values
+    def formatTasks(allTasks: Seq[Task]) = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
+    def tasks = service.find
+    println(tasks)
     Ok(formatTasks(tasks)).as(jsonContent)
   }
 

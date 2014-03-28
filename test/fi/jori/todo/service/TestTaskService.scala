@@ -1,7 +1,7 @@
 package fi.jori.todo.service
 
 import org.specs2.mutable.Specification
-import fi.jori.todo.model.Task
+import fi.jori.todo.model.TaskDAL
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import org.specs2.matcher.ResultMatchers
@@ -10,7 +10,9 @@ import java.util.Date
 @RunWith(classOf[JUnitRunner])
 class TestTaskService extends Specification with ResultMatchers {
 
-  val service = new TaskService()
+  // mysql.url=jdbc:mysql://localhost/simpletodo -Dmysql.user=simpletodo, -Dmysql.pass= -Dmysql.driver=com.mysql.jdbc.Driver
+  
+  val service = new TaskService("jdbc:mysql://localhost/simpletodo","simpletodo","","com.mysql.jdbc.Driver")
   val createdTask = service.create("topic of task", "some long explanation of task")
   
   "Created task" should {
@@ -82,7 +84,7 @@ class TestTaskService extends Specification with ResultMatchers {
       finishedTask.finished.get.getTime() must be >= finishedTask.started.get.getTime()
     }
     "stay finished" in {
-      service.start(finishedTask.id.get) must throwA[Exception]
+      service.start(finishedTask.id.get).finished.get.getTime() must be equalTo finishedTask.finished.get.getTime()
     }
   }
   
@@ -103,7 +105,7 @@ class TestTaskService extends Specification with ResultMatchers {
   
   "Finishing task that's not started" should {
     "add a start time" in {
-      finishOther.started.get must not be None
+      finishOther.started must not be None
     }
     "have start time before finish time" in {
       finishOther.started.get.getTime() must be <= finishOther.finished.get.getTime()

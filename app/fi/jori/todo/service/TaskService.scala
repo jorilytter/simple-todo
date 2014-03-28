@@ -1,86 +1,65 @@
 package fi.jori.todo.service
 
-import fi.jori.todo.model.Task
-import java.util.Date
+import fi.jori.todo.model.TaskDAL
+import java.sql.Date
 import scala.collection.mutable.Map
+import scala.slick.jdbc.JdbcBackend.{Database, Session}
+import fi.jori.todo.model.TaskDAL
+import fi.jori.todo.model.Task
+import play.api.Play
+import play.Configuration
 
-class TaskService {
+class TaskService(dbUrl: String, user: String, pass: String, driver: String) {
   
-  var tasks: Map[String,Task] = Map()
+  val db = Database.forURL(dbUrl, user = user, password = pass, driver = driver)
+  val tasks = new TaskDAL()
+  implicit def session: Session = db.createSession
+  
+  private def getDate = new Date(System.currentTimeMillis())
   
   private def startTime(started: Option[Date]) = {
       started match { 
-        case None => Some(new Date) 
+        case None => Some(getDate) 
         case _ => started 
       }
     }
 
+  def find(): List[Task] = {
+    tasks.find
+  }
+  
   def find(id: String): Task = {
-    tasks(id)
+   	tasks.find(id)
   }
   
   def create(topic: String, explanation: String): Task = {
     val uuid: String = java.util.UUID.randomUUID().toString();
     val newTask = Task(id=Some(uuid), 
-        created=Some(new Date), 
+        created=Some(getDate), 
         topic=topic, 
         explanation=explanation)
         
-    tasks += (uuid -> newTask)
-    newTask
+    tasks.create(newTask)
+    find(uuid)
   }
   
   def start(id: String): Task = {
-    val existingTask = tasks(id)
-    require(existingTask.finished == None, "Task is already finished")
-    
-    val updateTask = Task(id=existingTask.id, 
-        created=existingTask.created, 
-        topic=existingTask.topic, 
-        explanation=existingTask.explanation,
-        started=startTime(existingTask.started))
-    
-    tasks(existingTask.id.get) = updateTask
-    updateTask
+    tasks.start(id)
+    find(id)
   }
   
   def update(id: String, topic: String, explanation: String): Task = {
-    val existingTask = tasks(id)
-    val updateTask = Task(id=existingTask.id, 
-        created=existingTask.created, 
-        topic=topic, 
-        explanation=explanation,
-        started=existingTask.started,
-        finished=existingTask.finished)
-      
-    tasks(existingTask.id.get) = updateTask
-    updateTask
+    tasks.update(id, topic, explanation)
+    find(id)
   }
   
   def finish(id: String): Task = {
-    val existingTask = tasks(id)
-    val finishTask = Task(id=existingTask.id, 
-        created=existingTask.created, 
-        topic=existingTask.topic, 
-        explanation=existingTask.explanation,
-        started=startTime(existingTask.started),
-        finished=Some(new Date))
-        
-    tasks(existingTask.id.get) = finishTask
-    finishTask
+    tasks.finish(id)
+    find(id)
   }
   
   def remove(id: String): Task = {
-    val existingTask = tasks(id)
-    val removeTask = Task(id=existingTask.id, 
-        created=existingTask.created, 
-        topic=existingTask.topic, 
-        explanation=existingTask.explanation,
-        started=existingTask.started,
-        finished=existingTask.finished,
-        deleted=Some(new Date))
-        
-   tasks(existingTask.id.get) = removeTask
-   removeTask
+    tasks.remove(id)
+    find(id)
   }
 }
