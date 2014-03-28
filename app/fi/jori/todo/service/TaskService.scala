@@ -16,13 +16,6 @@ class TaskService(dbUrl: String, user: String, pass: String, driver: String) {
   implicit def session: Session = db.createSession
   
   private def getDate = new Date(System.currentTimeMillis())
-  
-  private def startTime(started: Option[Date]) = {
-      started match { 
-        case None => Some(getDate) 
-        case _ => started 
-      }
-    }
 
   def find(): List[Task] = {
     tasks.find
