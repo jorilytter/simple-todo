@@ -2,35 +2,45 @@ package fi.jori.todo.model
 
 import java.sql.Date
 import scala.slick.driver.MySQLDriver.simple._
+import scala.slick.jdbc.JdbcBackend.DatabaseDef
 
-class TaskDAL() {
+class TaskDAL(db: DatabaseDef) {
  
   val tasks = TableQuery[Tasks]
 
   def getDate = Some(new Date(System.currentTimeMillis()))
   
-  def find(implicit session: Session): List[Task] = tasks.run.toList
-  
-  def find(id: String)(implicit session: Session) = filterById(id).first
-  
-  def create(task: Task)(implicit session: Session) = tasks += task
-  
-  def start(id: String)(implicit session: Session) = {
-    def task = find(id)
-    if (task.started == None) filterById(id) map (t => (t.started)) update (getDate)
+  def find: List[Task] = db withSession { 
+    implicit session => tasks.run.toList 
   }
   
-  def finish(id: String)(implicit session: Session) = {
-    
-    def task = find(id)
-    if (task.started == None) filterById(id) map (t => (t.started,t.finished)) update (getDate,getDate)
-    else if (task.finished == None) filterById(id) map (t => (t.finished)) update (getDate)
+  def find(id: String) = db withSession { 
+    implicit session => filterById(id).first 
   }
   
-  def remove(id: String)(implicit session: Session) = filterById(id) map (t => t.deleted) update (getDate)
+  def create(task: Task) = db withSession { 
+    implicit session => tasks += task 
+  }
   
-  def update(id: String, topic: String, explanation: String)(implicit session: Session) = {
-    filterById(id) map (t => (t.topic,t.explanation)) update (topic,explanation)
+  def start(id: String) = db withSession { 
+    implicit session => {
+        def task = find(id)
+        if (task.started == None) filterById(id) map (t => (t.started)) update (getDate)
+  }}
+  
+  def finish(id: String) = db withSession { 
+    implicit session => {
+        def task = find(id)
+        if (task.started == None) filterById(id) map (t => (t.started, t.finished)) update (getDate, getDate)
+        else if (task.finished == None) filterById(id) map (t => (t.finished)) update (getDate)
+  }}
+  
+  def remove(id: String) = db withSession { 
+    implicit session => filterById(id) map (t => t.deleted) update (getDate) 
+  }
+  
+  def update(id: String, topic: String, explanation: String) = db withSession { 
+    implicit session => filterById(id) map (t => (t.topic,t.explanation)) update (topic,explanation)
   }
   
   private def filterById(id: String) = tasks filter(t => t.id === id)

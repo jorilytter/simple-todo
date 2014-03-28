@@ -5,11 +5,22 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import org.specs2.matcher.ResultMatchers
 import java.util.Date
+import com.mchange.v2.c3p0.ComboPooledDataSource
+import scala.slick.jdbc.JdbcBackend.Database
 
 @RunWith(classOf[JUnitRunner])
 class TestTaskService extends Specification with ResultMatchers {
 
-  val service = new TaskService("jdbc:mysql://localhost/simpletodo","simpletodo","","com.mysql.jdbc.Driver")
+  val database = {
+    val ds = new ComboPooledDataSource
+    ds.setDriverClass("com.mysql.jdbc.Driver")
+    ds.setJdbcUrl("jdbc:mysql://localhost/simpletodo")
+    ds.setUser("simpletodo")
+    ds.setPassword("")
+    Database.forDataSource(ds)
+  }
+  
+  val service = new TaskService(database)
   val createdTask = service.create("topic of task", "some long explanation of task")
   
   "Created task" should {

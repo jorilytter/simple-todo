@@ -1,16 +1,20 @@
 package controllers
 
+import scala.slick.jdbc.JdbcBackend.Database
+
+import com.mchange.v2.c3p0.ComboPooledDataSource
+
+import fi.jori.todo.model.Task
+import fi.jori.todo.service.TaskService
+import play.api.Play
+import play.api.libs.functional.syntax.functionalCanBuildApplicative
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsError
 import play.api.libs.json.Json
-import play.api.libs.json.__
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.libs.json.__
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import views.html.defaultpages.badRequest
-import play.api.libs.json.JsError
-import play.api.libs.functional.syntax._
-import fi.jori.todo.service.TaskService
-import fi.jori.todo.model.Task
-import play.api.Play
 
 object Application extends Controller {
 
@@ -23,9 +27,16 @@ object Application extends Controller {
   val pass = Play.current.configuration.getString("mysql.pass").get
   val driver = Play.current.configuration.getString("mysql.driver").get
   
-  println(dbUrl+" "+user+" "+driver)
+  val database = {
+    val ds = new ComboPooledDataSource
+    ds.setDriverClass(driver)
+    ds.setJdbcUrl(dbUrl)
+    ds.setUser(user)
+    ds.setPassword(pass)
+    Database.forDataSource(ds)
+  }
   
-  private val service = new TaskService(dbUrl, user, pass, driver)
+  private val service = new TaskService(database)
 
   private def taskResponse(task: Task) = {
     task match { 
