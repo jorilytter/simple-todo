@@ -1,7 +1,6 @@
 package fi.jori.todo.service
 
 import org.specs2.mutable.Specification
-import fi.jori.todo.model.TaskDAL
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import org.specs2.matcher.ResultMatchers
@@ -10,8 +9,6 @@ import java.util.Date
 @RunWith(classOf[JUnitRunner])
 class TestTaskService extends Specification with ResultMatchers {
 
-  // mysql.url=jdbc:mysql://localhost/simpletodo -Dmysql.user=simpletodo, -Dmysql.pass= -Dmysql.driver=com.mysql.jdbc.Driver
-  
   val service = new TaskService("jdbc:mysql://localhost/simpletodo","simpletodo","","com.mysql.jdbc.Driver")
   val createdTask = service.create("topic of task", "some long explanation of task")
   

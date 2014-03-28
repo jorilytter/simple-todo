@@ -4,17 +4,10 @@ import java.sql.Date
 import scala.slick.driver.MySQLDriver.simple._
 
 class TaskDAL() {
-
-  type taskPhase = (Boolean, Boolean, Boolean)
-  
+ 
   val tasks = TableQuery[Tasks]
 
   def getDate = Some(new Date(System.currentTimeMillis()))
-  
-  def getPhase(id: String)(implicit session: Session) = {
-    def task = find(id)
-    (task.started == None, task.finished == None,task.deleted == None)
-  }
   
   def find(implicit session: Session): List[Task] = tasks.run.toList
   
