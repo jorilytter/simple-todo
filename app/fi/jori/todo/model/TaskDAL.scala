@@ -14,6 +14,30 @@ class TaskDAL(db: DatabaseDef) {
     implicit session => tasks.run.toList 
   }
   
+  def removedTasks = db.withSession {
+    implicit session => {
+      (tasks filter(t => (t.deleted.isNotNull))).run.toList
+    }
+  }
+  
+  def finishedTasks = db.withSession {
+    implicit session => {
+      (tasks filter(t => (t.deleted.isNull && t.finished.isNotNull))).run.toList
+    }
+  }
+  
+  def startedTasks = db.withSession {
+    implicit session => {
+      (tasks filter(t => (t.deleted.isNull && t.finished.isNull && t.started.isNotNull))).run.toList
+    }
+  }
+  
+  def createdTasks = db.withSession {
+    implicit session => {
+      (tasks filter(t => (t.deleted.isNull && t.finished.isNull && t.started.isNull))).run.toList
+    }
+  }
+  
   def find(id: String) = db withSession { 
     implicit session => filterById(id).first 
   }

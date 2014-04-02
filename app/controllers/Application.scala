@@ -1,9 +1,7 @@
 package controllers
 
 import scala.slick.jdbc.JdbcBackend.Database
-
 import com.mchange.v2.c3p0.ComboPooledDataSource
-
 import fi.jori.todo.model.Task
 import fi.jori.todo.service.TaskService
 import play.api.Play
@@ -15,6 +13,7 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.__
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import play.api.libs.json.JsObject
 
 object Application extends Controller {
 
@@ -40,9 +39,21 @@ object Application extends Controller {
 
   private def taskResponse(task: Task) = {
     task match { 
-      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent)
-      case _ => BadRequest("Error: Task not found")
+      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+      case _ => BadRequest("Error: Task not found").withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
     }
+  }
+  
+  private def formatTasks(allTasks: Seq[Task]) = {
+    def tasks = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
+    Ok(tasks).as(jsonContent).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+  }
+  
+  def options(task: String) = Action {
+    Ok("")
+    .withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+    .withHeaders(ACCESS_CONTROL_ALLOW_METHODS -> "POST,PUT")
+    .withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> "Content-Type")
   }
   
   def index = Action {
@@ -55,10 +66,23 @@ object Application extends Controller {
   }
   
   def tasks = Action {
-    def formatTasks(allTasks: Seq[Task]) = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
-    def tasks = service.find
-    println(tasks)
-    Ok(formatTasks(tasks)).as(jsonContent)
+    formatTasks(service.find)
+  }
+  
+  def createdTasks = Action {
+    formatTasks(service.findCreated)
+  }
+  
+  def startedTasks = Action {
+    formatTasks(service.findStarted)
+  }
+  
+  def finishedTasks = Action {
+    formatTasks(service.findFinished)
+  }
+  
+  def removedTasks = Action {
+    formatTasks(service.findRemoved)
   }
 
   def createTask = Action(parse.json) { request =>
@@ -85,5 +109,16 @@ object Application extends Controller {
   def removeTask(uid: String) = Action {
     def task = service.remove(uid)
     taskResponse(task)
+  }
+  
+  def updateTask(uid: String) = Action(parse.json) { request =>
+    request.body.validate[(String,String)].map { 
+      case (topic,explanation) => {
+        def task = service.update(uid,topic,explanation)
+        taskResponse(task)
+      }
+    }.recoverTotal {
+      e => BadRequest("Error: " + JsError.toFlatJson(e))
+    }
   }
 }

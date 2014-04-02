@@ -51,4 +51,20 @@ class TaskService(database: DatabaseDef) {
     tasks.remove(id)
     find(id)
   }
+  
+  def findRemoved: List[Task] = {
+    tasks.removedTasks
+  }
+  
+  def findFinished: List[Task] = {
+    tasks.finishedTasks
+  }
+  
+  def findStarted: List[Task] = {
+    tasks.startedTasks
+  }
+  
+  def findCreated: List[Task] = {
+    tasks.createdTasks
+  }
 }
