@@ -23,7 +23,7 @@ class TaskService(database: DatabaseDef) {
   
   def create(topic: String, explanation: String): Task = {
     val uuid: String = java.util.UUID.randomUUID().toString();
-    val newTask = Task(id=Some(uuid), 
+    val newTask = Task(_id=Some(uuid), 
         created=Some(getDate), 
         topic=topic, 
         explanation=explanation)

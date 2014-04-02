@@ -75,11 +75,11 @@ class TaskDAL(db: DatabaseDef) {
     implicit session => filterById(id) map (t => (t.topic,t.explanation)) update (topic,explanation)
   }
   
-  private def filterById(id: String) = tasks filter(t => t.id === id)
+  private def filterById(id: String) = tasks filter(t => t._id === id)
 }
 
 case class Task(
-    id: Option[String] = None,
+    _id: Option[String] = None,
     topic: String,
     explanation: String,
     created: Option[Date] = None,
@@ -89,12 +89,12 @@ case class Task(
 
   class Tasks(tag: Tag) extends Table[Task](tag, "tasks") {
 
-    def id = column[Option[String]]("id", O.PrimaryKey)
+    def _id = column[Option[String]]("id", O.PrimaryKey)
     def topic = column[String]("topic")
     def explanation = column[String]("description")
     def created = column[Option[Date]]("created", O.Nullable)
     def started = column[Option[Date]]("started", O.Nullable)
     def finished = column[Option[Date]]("finished", O.Nullable)
     def deleted = column[Option[Date]]("deleted", O.Nullable)
-    def * = (id,topic, explanation, created, started, finished, deleted) <> (Task.tupled, Task.unapply _)
+    def * = (_id,topic, explanation, created, started, finished, deleted) <> (Task.tupled, Task.unapply _)
   }
