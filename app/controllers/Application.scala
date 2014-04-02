@@ -14,6 +14,7 @@ import play.api.libs.json.__
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.libs.json.JsObject
+import play.api.mvc.SimpleResult
 
 object Application extends Controller {
 
@@ -37,16 +38,20 @@ object Application extends Controller {
   
   private val service = new TaskService(database)
 
+  private def addHeaders(response: SimpleResult) = {
+    response.withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+  }
+  
   private def taskResponse(task: Task) = {
     task match { 
-      case Task(_,_,_,_,_,_,_) => Ok(Json.toJson(task)).as(jsonContent).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
-      case _ => BadRequest("Error: Task not found").withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+      case Task(_,_,_,_,_,_,_) => addHeaders(Ok(Json.toJson(task)).as(jsonContent))
+      case _ => addHeaders(BadRequest("Error: Task not found"))
     }
   }
   
   private def formatTasks(allTasks: Seq[Task]) = {
     def tasks = Json.obj("tasks" -> allTasks.map(task => Json.toJson(task)))
-    Ok(tasks).as(jsonContent).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+    addHeaders(Ok(tasks).as(jsonContent))
   }
   
   def options(task: String) = Action {
@@ -92,7 +97,7 @@ object Application extends Controller {
         taskResponse(task)
       }
     }.recoverTotal {
-      e => BadRequest("Error: " + JsError.toFlatJson(e))
+      e => addHeaders(BadRequest("Error creating task: " + JsError.toFlatJson(e)))
     }
   }
   
@@ -118,7 +123,7 @@ object Application extends Controller {
         taskResponse(task)
       }
     }.recoverTotal {
-      e => BadRequest("Error: " + JsError.toFlatJson(e))
+      e => addHeaders(BadRequest("Error updating task: " + JsError.toFlatJson(e)))
     }
   }
 }
