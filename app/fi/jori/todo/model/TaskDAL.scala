@@ -16,25 +16,33 @@ class TaskDAL(db: DatabaseDef) {
   
   def removedTasks = db.withSession {
     implicit session => {
-      (tasks filter(t => (t.deleted.isNotNull))).run.toList
+      (tasks filter(t => (t.deleted.isNotNull)))
+      .sortBy(t => t.deleted.desc)
+      .run.toList
     }
   }
   
   def finishedTasks = db.withSession {
     implicit session => {
-      (tasks filter(t => (t.deleted.isNull && t.finished.isNotNull))).run.toList
+      (tasks filter(t => (t.deleted.isNull && t.finished.isNotNull)))
+      .sortBy(t => t.created.asc)
+      .run.toList
     }
   }
   
   def startedTasks = db.withSession {
     implicit session => {
-      (tasks filter(t => (t.deleted.isNull && t.finished.isNull && t.started.isNotNull))).run.toList
+      (tasks filter(t => (t.deleted.isNull && t.finished.isNull && t.started.isNotNull)))
+      .sortBy(t => t.created.asc)
+      .run.toList
     }
   }
   
   def createdTasks = db.withSession {
     implicit session => {
-      (tasks filter(t => (t.deleted.isNull && t.finished.isNull && t.started.isNull))).run.toList
+      (tasks filter(t => (t.deleted.isNull && t.finished.isNull && t.started.isNull)))
+      .sortBy(t => t.created.asc)
+      .run.toList
     }
   }
   
