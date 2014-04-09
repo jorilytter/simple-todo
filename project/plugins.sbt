@@ -1,7 +1,3 @@
-// Comment to get more information during initialization
-logLevel := Level.Warn
+addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 
-// The Typesafe repository 
-resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
-
-addSbtPlugin("com.sksamuel.scoverage" %% "sbt-scoverage" % "0.95.7")
+addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.2")

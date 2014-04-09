@@ -1,8 +1,12 @@
-simple-todo
-===========
+# simple-todo #
 
-Simple todo application written in scala.
+## Build & Run ##
 
-Service layer in scala.
+```sh
+$ cd simple-todo
+$ ./sbt
+> container:start
+> browse
+```
 
-REST-service in scala with scalatra.
+If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.
