@@ -6,6 +6,7 @@ import com.mojolly.scalate.ScalatePlugin._
 import ScalateKeys._
 
 object SimpletodoBuild extends Build {
+
   val Organization = "fi.jori"
   val Name = "simple-todo"
   val Version = "0.1"

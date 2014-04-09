@@ -6,10 +6,12 @@ import fi.jori.todo.service.TaskService
 import org.json4s.DefaultFormats
 import org.json4s.Formats
 import org.scalatra.json.JacksonJsonSupport
+import org.scalatra.CorsSupport
+import fi.jori.todo.model.Task
 
-case class TaskContents(topic: String, description: String)
+case class TaskContents(topic: String, explanation: String)
 
-class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSupport {
+class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSupport /*with CorsSupport */{
 
   protected implicit val jsonFormats: Formats = DefaultFormats
   val service = new TaskService()
@@ -18,7 +20,11 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
     contentType = formats("json")
   }
   
-  private def actionById(action: String => Any): Any = action(params("id"))
+  private def actionById(action: String => Task): Task = action(params("id"))
+  
+//  options("/*"){
+//    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
+//  }
   
   get("/task/?") {
     service.tasks
@@ -30,12 +36,12 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
   
   post("/task/?") {
     val newTask = parsedBody.extract[TaskContents]
-    service.create(newTask.topic, newTask.description)
+    service.create(newTask.topic, newTask.explanation)
   }
   
   put("/task/:id/?") {
     val newTask = parsedBody.extract[TaskContents]
-    service.update(params("id"), newTask.topic, newTask.description)
+    service.update(params("id"), newTask.topic, newTask.explanation)
   }
   
   put("/task/:id/remove/?") {
