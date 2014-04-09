@@ -35,18 +35,18 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
   
   put("/task/:id/?") {
     val newTask = parsedBody.extract[TaskContents]
-    service.update({params("id")}, newTask.topic, newTask.description)
+    service.update(params("id"), newTask.topic, newTask.description)
   }
   
   put("/task/:id/remove/?") {
-    service.remove({params("id")})
+    actionById(service.remove)
   }
   
   put("/task/:id/start/?") {
-    service.start({params("id")})
+    actionById(service.start)
   }
   
   put("/task/:id/finish/?") {
-    service.finish({params("id")})
+    actionById(service.finish)
   }
 }
