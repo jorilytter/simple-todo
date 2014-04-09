@@ -8,7 +8,7 @@ import org.specs2.matcher.ResultMatchers
 import java.util.Date
 
 @RunWith(classOf[JUnitRunner])
-class TestTaskService extends Specification with ResultMatchers {
+class TestTaskService extends Specification {
 
   val service = new TaskService()
   val createdTask = service.create("topic of task", "some long explanation of task")

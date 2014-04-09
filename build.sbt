@@ -5,12 +5,9 @@ version := "0.1"
 scalaVersion := "2.10.2"
 
 libraryDependencies ++= Seq(
-  jdbc,
-  anorm,
-  cache
+  "org.scalatra" % "scalatra_2.10" % "2.2.2",
+  "org.specs2" % "specs2_2.10" % "2.3.10"
 )     
-
-play.Project.playScalaSettings
 
 ScoverageSbtPlugin.instrumentSettings
 
