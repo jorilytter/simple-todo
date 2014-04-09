@@ -27,7 +27,7 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
   }
   
   get("/task/?") {
-    service.tasks
+    service.tasks.values
   }
 
   get("/task/:id/?") {
