@@ -11,7 +11,7 @@ import fi.jori.todo.model.Task
 
 case class TaskContents(topic: String, explanation: String)
 
-class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSupport /*with CorsSupport */{
+class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSupport with CorsSupport {
 
   protected implicit val jsonFormats: Formats = DefaultFormats
   val service = new TaskService()
@@ -22,9 +22,9 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
   
   private def actionById(action: String => Task): Task = action(params("id"))
   
-//  options("/*"){
-//    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
-//  }
+  options("/*"){
+    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
+  }
   
   get("/task/?") {
     service.tasks
