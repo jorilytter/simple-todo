@@ -15,6 +15,7 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
 
   protected implicit val jsonFormats: Formats = DefaultFormats
   val service = new TaskService()
+  val defaultResponse = "welcome to the wild side"
   
   before() {
     contentType = formats("json")
@@ -26,12 +27,28 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
     response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
   }
   
-  get("/task/?") {
-    service.tasks.values
+  get("/") {
+    defaultResponse
   }
 
   get("/task/:id/?") {
     actionById(service.find)
+  }
+  
+  get("/task/todo/?") {
+    service.todo
+  }
+  
+  get("/task/ongoing/?") {
+    service.ongoing
+  }
+  
+  get("/task/done/?") {
+    service.done
+  }
+  
+  get("/task/removed/?") {
+    service.removed
   }
   
   post("/task/?") {
