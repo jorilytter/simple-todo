@@ -1,5 +1,7 @@
 # simple-todo #
 
+[![Build Status](https://travis-ci.org/jorilytter/simple-todo.svg?branch=scalatra-rest)](https://travis-ci.org/jorilytter/simple-todo)
+
 ## Build & Run ##
 
 ```sh
