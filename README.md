@@ -1,6 +1,8 @@
 simple-todo
 ===========
 
+[![Build Status](https://travis-ci.org/jorilytter/simple-todo.svg?branch=master)](https://travis-ci.org/jorilytter/simple-todo)
+
 Simple todo application written in scala.
 
 Service layer in scala.
