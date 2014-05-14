@@ -20,19 +20,19 @@ class TaskService {
   }
   
   def todo: List[Task] = {
-    tasks.filter(t => t._2.deleted == None && t._2.started == None).values.toList
+    tasks.values.filter(task => (task.deleted == None && task.started == None && task.finished == None)).toList
   }
   
   def ongoing: List[Task] = {
-    tasks.filter(t => t._2.deleted == None && t._2.started == Some && t._2.finished == None).values.toList
+    tasks.values.filter(task => (task.deleted == None && task.started != None && task.finished == None)).toList
   }
   
   def done: List[Task] = {
-    tasks.filter(t => t._2.deleted == None && t._2.started == Some && t._2.finished == Some).values.toList
+    tasks.values.filter(task => (task.deleted == None && task.finished != None)).toList
   }
   
   def removed: List[Task] = {
-    tasks.filter(t => t._2.deleted == Some).values.toList
+    tasks.values.filter(task => task.deleted != None).toList
   }
   
   def create(topic: String, explanation: String): Task = {
