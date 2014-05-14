@@ -85,6 +85,21 @@ class TaskServletSpecIntegration extends MutableScalatraSpec {
       }
     }
   }
+  "PUT /task/<id>" should {
+    "update te topic and explanation of task" in {
+      post("/task", newTask, headers) {
+        val task = parse(response.body).extract[Task]
+        val updateTaskValues = swrite(new TaskContents(topic = "updated topic", explanation = "updated explanation"))
+        
+        put("/task/"+task.id.get, updateTaskValues, headers) {
+          status must be equalTo 200
+          val updatedTask = parse(response.body).extract[Task]
+          updatedTask.topic must be equalTo ("updated topic")
+          updatedTask.explanation must be equalTo ("updated explanation")
+        }
+      }
+    }
+  }
   "GET task at /task/<id>" should {
     "return a task" in {
       post("/task", newTask, headers) {
