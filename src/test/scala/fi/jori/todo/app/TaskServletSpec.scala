@@ -35,7 +35,53 @@ class TaskServletSpecIntegration extends MutableScalatraSpec {
       post("/task", newTask, headers) {
         status must be equalTo 200
         val createdTask = parse(response.body).extract[Task]
-        createdTask.id must not be equalTo(None)
+        createdTask.id must not be equalTo (None)
+      }
+    }
+  }
+  "PUT /task/<id>/start" should {
+    "add started timestamp to task" in {
+      post("/task", newTask, headers) {
+        val task = parse(response.body).extract[Task]
+        
+        put("/task/"+task.id.get+"/start") {
+          status must be equalTo 200
+          val startedTask = parse(response.body).extract[Task]
+          startedTask.started must not be equalTo (None)
+        }
+      }
+    }
+  }
+  "PUT /task/<id>/finish" should {
+    "add started and finished timestamps to task" in {
+      post("/task", newTask, headers) {
+        val task = parse(response.body).extract[Task]
+        
+        put("/task/"+task.id.get+"/finish") {
+          status must be equalTo 200
+          val finishedTask = parse(response.body).extract[Task]
+          finishedTask.finished must not be equalTo (None)
+          finishedTask.started must not be equalTo (None)
+        }
+      }
+    }
+  }
+  "PUT /task/<id>/start and /task/<id>/finish" should {
+    "add not change the started timestamp of /task/<id>/start call" in {
+      post("/task", newTask, headers) {
+        val task = parse(response.body).extract[Task]
+        
+        put("/task/"+task.id.get+"/start") {
+          val startedTask = parse(response.body).extract[Task]
+          startedTask.started must not be equalTo (None)
+
+          put("/task/" + task.id.get + "/finish") {
+            status must be equalTo 200
+            val finishedTask = parse(response.body).extract[Task]
+            finishedTask.finished must not be equalTo (None)
+            finishedTask.started.get must be equalTo (startedTask.started.get)
+          }
+        }
       }
     }
   }
