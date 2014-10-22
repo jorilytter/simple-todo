@@ -16,21 +16,21 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
   protected implicit val jsonFormats: Formats = DefaultFormats
   val service = new TaskService()
   val defaultResponse = "welcome to the wild side"
-  
+
   before() {
     contentType = formats("json")
   }
-  
+
   private def actionById(action: String => Task): Task = action(params("id"))
-  
-  options("/*"){
+
+  options("/*") {
     response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
   }
-  
+
   get("/") {
     defaultResponse
   }
-  
+
   get("/task/?") {
     service.tasks.values.toList
   }
@@ -38,41 +38,41 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
   get("/task/:id/?") {
     actionById(service.find)
   }
-  
+
   get("/task/todo/?") {
     service.todo
   }
-  
+
   get("/task/ongoing/?") {
     service.ongoing
   }
-  
+
   get("/task/done/?") {
     service.done
   }
-  
+
   get("/task/removed/?") {
     service.removed
   }
-  
+
   post("/task/?") {
     val newTask = parsedBody.extract[TaskContents]
     service.create(newTask.topic, newTask.explanation)
   }
-  
+
   put("/task/:id/?") {
     val updateTask = parsedBody.extract[TaskContents]
     service.update(params("id"), updateTask.topic, updateTask.explanation)
   }
-  
+
   put("/task/:id/remove/?") {
     actionById(service.remove)
   }
-  
+
   put("/task/:id/start/?") {
     actionById(service.start)
   }
-  
+
   put("/task/:id/finish/?") {
     actionById(service.finish)
   }
