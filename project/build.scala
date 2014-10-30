@@ -10,7 +10,7 @@ object SimpletodoBuild extends Build {
   val Organization = "fi.jori"
   val Name = "simple-todo"
   val Version = "0.1"
-  val ScalaVersion = "2.11.1"
+  val ScalaVersion = "2.10.4"
   val ScalatraVersion = "2.3.0"
 
   lazy val project = Project (
