@@ -2,7 +2,7 @@ name := "simple-todo"
 
 version := "0.1"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.4"
 
 libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % "2.0.1",
