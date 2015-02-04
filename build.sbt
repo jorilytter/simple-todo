@@ -14,3 +14,4 @@ play.Project.playScalaSettings
 
 ScoverageSbtPlugin.instrumentSettings
 
+javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
