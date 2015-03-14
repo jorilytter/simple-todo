@@ -8,10 +8,12 @@ import org.json4s.Formats
 import org.scalatra.json.JacksonJsonSupport
 import org.scalatra.CorsSupport
 import fi.jori.todo.model.Task
+import akka.actor.ActorSystem
+import akka.actor.ActorRef
 
 case class TaskContents(topic: String, explanation: String)
 
-class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSupport with CorsSupport {
+class TaskServlet(system: ActorSystem, dummyActor: ActorRef) extends ScalatraServlet with MethodOverride with JacksonJsonSupport with CorsSupport {
 
   protected implicit val jsonFormats: Formats = DefaultFormats
   val service = new TaskService()
@@ -28,6 +30,7 @@ class TaskServlet extends ScalatraServlet with MethodOverride with JacksonJsonSu
   }
 
   get("/") {
+    dummyActor ! "I'm coming, don't leave without me!!"
     defaultResponse
   }
 

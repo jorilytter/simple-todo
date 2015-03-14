@@ -10,7 +10,7 @@ object SimpletodoBuild extends Build {
   val Organization = "fi.jori"
   val Name = "simple-todo"
   val Version = "0.1"
-  val ScalaVersion = "2.10.4"
+  val ScalaVersion = "2.11.6"
   val ScalatraVersion = "2.3.0"
 
   lazy val project = Project (
@@ -31,7 +31,8 @@ object SimpletodoBuild extends Build {
         "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container;provided;test" artifacts (Artifact("javax.servlet", "jar", "jar")),
 	"org.scalatra" %% "scalatra-json" % ScalatraVersion,
 	"org.json4s"   %% "json4s-jackson" % "3.2.10",
-        "junit" % "junit" % "4.11"
+        "junit" % "junit" % "4.11",
+	"com.typesafe.akka" %% "akka-actor" % "2.3.9"
       ),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
         Seq(

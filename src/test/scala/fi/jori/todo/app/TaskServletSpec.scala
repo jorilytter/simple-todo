@@ -3,6 +3,9 @@ package fi.jori.todo.app
 import org.scalatra.test.specs2.MutableScalatraSpec
 import org.scalatra.test.specs2.ScalatraSpec
 import fi.jori.todo.model.Task
+import akka.actor.ActorSystem
+import akka.actor.Props
+import fi.jori.todo.actor.DummyActor
 
 // For more on Specs2, see http://etorreborre.github.com/specs2/guide/org.specs2.guide.QuickStart.html
 class TaskServletSpec extends ScalatraSpec { def is =
@@ -10,7 +13,9 @@ class TaskServletSpec extends ScalatraSpec { def is =
     "should return status 200"                  ! root200^
                                                 end
 
-  addServlet(classOf[TaskServlet], "/*")
+  private val system = ActorSystem()
+  private val dummyActorRef = system.actorOf(Props[DummyActor])
+  addServlet(new TaskServlet(system, dummyActorRef), "/*")
 
   def root200 = get("/") {
     status must_== 200
@@ -25,7 +30,9 @@ class TaskServletSpecIntegration extends MutableScalatraSpec {
   
   implicit val formats = DefaultFormats
   
-  addServlet(classOf[TaskServlet], "/*")
+  private val system = ActorSystem()
+  private val dummyActorRef = system.actorOf(Props[DummyActor])
+  addServlet(new TaskServlet(system, dummyActorRef), "/*")
   
   val headers = Map("Accept" -> "application/json", "Content-Type" -> "application/json")
   val newTask = swrite(new Task(topic = "topic", explanation = "description"))
